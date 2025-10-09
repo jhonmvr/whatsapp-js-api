@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wwebjs-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-wappdb}
+      POSTGRES_USER: ${DB_USER:-wapp}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-wapp}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-wapp} -d ${DB_NAME:-wappdb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  wwebjs:
+    build: .
+    container_name: wwebjs-microservice
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+    ports:
+      - "8080:8080"
+    volumes:
+      - wwebjs_data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  wwebjs_data:
