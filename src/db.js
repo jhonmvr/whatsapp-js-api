@@ -3,10 +3,10 @@ import logger from './logger.js';
 
 const {
   DB_HOST='localhost',
-  DB_PORT='5432',
+  DB_PORT='25432',
   DB_NAME='wappdb',
-  DB_USER='wapp',
-  DB_PASSWORD='wapp'
+  DB_USER='postgres',
+  DB_PASSWORD='masterylas20'
 } = process.env;
 
 const pool = new pg.Pool({
@@ -48,6 +48,15 @@ export async function migrate() {
     status_code int,
     error text,
     created_at timestamptz NOT NULL DEFAULT now()
+  );
+
+  CREATE TABLE IF NOT EXISTS whatsapp_sessions (
+    session_id text PRIMARY KEY,
+    name text,
+    phone_number text,
+    is_active boolean NOT NULL DEFAULT true,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
   );
   `;
   await pool.query(ddl);
@@ -119,6 +128,73 @@ export async function getActiveTargetsWithHeaders() {
 export async function logDelivery(targetId, body, statusCode, error) {
   await pool.query('INSERT INTO webhook_delivery_log(target_id,request_body,status_code,error) VALUES($1,$2,$3,$4)',
     [targetId, body, statusCode, error || null]);
+}
+
+// WhatsApp Sessions CRUD
+export async function createSession(sessionId, name = null, phoneNumber = null) {
+  const { rows } = await pool.query(
+    `INSERT INTO whatsapp_sessions(session_id, name, phone_number, updated_at)
+     VALUES($1, $2, $3, now())
+     ON CONFLICT (session_id) DO UPDATE SET name=EXCLUDED.name, updated_at=now()
+     RETURNING session_id, name, phone_number, is_active, created_at, updated_at`,
+    [sessionId, name, phoneNumber]
+  );
+  return rows[0];
+}
+
+export async function getSession(sessionId) {
+  const { rows } = await pool.query(
+    'SELECT session_id, name, phone_number, is_active, created_at, updated_at FROM whatsapp_sessions WHERE session_id=$1',
+    [sessionId]
+  );
+  return rows[0] || null;
+}
+
+export async function listSessions() {
+  const { rows } = await pool.query(
+    'SELECT session_id, name, phone_number, is_active, created_at, updated_at FROM whatsapp_sessions ORDER BY created_at DESC'
+  );
+  return rows;
+}
+
+export async function updateSession(sessionId, updates) {
+  const fields = [];
+  const values = [];
+  let paramIndex = 1;
+
+  if (updates.name !== undefined) {
+    fields.push(`name=$${paramIndex++}`);
+    values.push(updates.name);
+  }
+  if (updates.phone_number !== undefined) {
+    fields.push(`phone_number=$${paramIndex++}`);
+    values.push(updates.phone_number);
+  }
+  if (updates.is_active !== undefined) {
+    fields.push(`is_active=$${paramIndex++}`);
+    values.push(updates.is_active);
+  }
+
+  if (fields.length === 0) {
+    return getSession(sessionId);
+  }
+
+  fields.push(`updated_at=now()`);
+  values.push(sessionId);
+
+  const { rows } = await pool.query(
+    `UPDATE whatsapp_sessions SET ${fields.join(', ')} WHERE session_id=$${paramIndex} RETURNING session_id, name, phone_number, is_active, created_at, updated_at`,
+    values
+  );
+  return rows[0] || null;
+}
+
+export async function deleteSession(sessionId) {
+  const { rows } = await pool.query(
+    'DELETE FROM whatsapp_sessions WHERE session_id=$1 RETURNING session_id',
+    [sessionId]
+  );
+  return rows.length > 0;
 }
 
 export default pool;

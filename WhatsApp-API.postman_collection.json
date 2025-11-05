@@ -1,0 +1,427 @@
+{
+	"info": {
+		"_postman_id": "whatsapp-api-multi-session",
+		"name": "WhatsApp API - Multi Session",
+		"description": "Colección de Postman para la API de WhatsApp con soporte de múltiples sesiones",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "sessionId",
+			"value": "cuenta1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Root",
+			"item": [
+				{
+					"name": "Get Root",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Get Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Sessions",
+			"item": [
+				{
+					"name": "List Sessions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions"]
+						},
+						"description": "Lista todas las sesiones de WhatsApp"
+					}
+				},
+				{
+					"name": "Create Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"name\": \"Mi Cuenta Principal\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions"]
+						},
+						"description": "Crea una nueva sesión de WhatsApp"
+					}
+				},
+				{
+					"name": "Get Session",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions", "{{sessionId}}"]
+						},
+						"description": "Obtiene información de una sesión específica"
+					}
+				},
+				{
+					"name": "Get QR (HTML)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/qr",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions", "{{sessionId}}", "qr"]
+						},
+						"description": "Obtiene el QR en formato HTML (página web para escanear)"
+					}
+				},
+				{
+					"name": "Get QR (JSON)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/qr?format=json",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions", "{{sessionId}}", "qr"],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Obtiene el QR en formato JSON"
+					}
+				},
+				{
+					"name": "Get Session Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions", "{{sessionId}}", "status"]
+						},
+						"description": "Obtiene el estado de una sesión"
+					}
+				},
+				{
+					"name": "Reinit Session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/reinit",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions", "{{sessionId}}", "reinit"]
+						},
+						"description": "Reinicializa una sesión (genera nuevo QR si es necesario)"
+					}
+				},
+				{
+					"name": "Update Session",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Nuevo Nombre\",\n  \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions", "{{sessionId}}"]
+						},
+						"description": "Actualiza información de una sesión"
+					}
+				},
+				{
+					"name": "Delete Session",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "sessions", "{{sessionId}}"]
+						},
+						"description": "Elimina una sesión"
+					}
+				}
+			]
+		},
+		{
+			"name": "Messages",
+			"item": [
+				{
+					"name": "Send Text Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"to\": \"1234567890\",\n  \"message\": \"Hola desde WhatsApp API\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/messages/text?sessionId={{sessionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "messages", "text"],
+							"query": [
+								{
+									"key": "sessionId",
+									"value": "{{sessionId}}"
+								}
+							]
+						},
+						"description": "Envía un mensaje de texto. sessionId puede ir en query param, body o header X-Session-Id"
+					}
+				},
+				{
+					"name": "Send Text Message (Header)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Id",
+								"value": "{{sessionId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"to\": \"1234567890\",\n  \"message\": \"Hola desde WhatsApp API\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/messages/text",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "messages", "text"]
+						},
+						"description": "Envía un mensaje de texto usando el header X-Session-Id"
+					}
+				},
+				{
+					"name": "Send Template Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"to\": \"1234567890\",\n  \"templateId\": \"welcome\",\n  \"parameters\": {\n    \"name\": \"Juan\",\n    \"company\": \"Mi Empresa\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/messages/template?sessionId={{sessionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "messages", "template"],
+							"query": [
+								{
+									"key": "sessionId",
+									"value": "{{sessionId}}"
+								}
+							]
+						},
+						"description": "Envía un mensaje usando un template predefinido"
+					}
+				}
+			]
+		},
+		{
+			"name": "Config",
+			"item": [
+				{
+					"name": "Get Config",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/config",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "config"]
+						},
+						"description": "Obtiene la configuración del servicio"
+					}
+				},
+				{
+					"name": "Update Config",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"templates\": {\n    \"welcome\": \"Hola {{name}}, bienvenido a {{company}}\"\n  },\n  \"rateLimit\": {\n    \"enabled\": false,\n    \"rpm\": 60\n  },\n  \"webhook\": {\n    \"signatureHeader\": \"X-WApp-Signature-256\",\n    \"signEnabled\": true\n  },\n  \"webhookSecret\": {\n    \"secret\": \"tu-secret-key\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/config",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "config"]
+						},
+						"description": "Actualiza la configuración del servicio"
+					}
+				},
+				{
+					"name": "Upsert Template",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"template\": \"Hola {{name}}, bienvenido a {{company}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/config/templates/welcome",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "config", "templates", "welcome"]
+						},
+						"description": "Crea o actualiza un template"
+					}
+				},
+				{
+					"name": "Delete Template",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/config/templates/welcome",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "config", "templates", "welcome"]
+						},
+						"description": "Elimina un template"
+					}
+				}
+			]
+		},
+		{
+			"name": "Webhooks",
+			"item": [
+				{
+					"name": "List Webhook Targets",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/webhooks",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "webhooks"]
+						},
+						"description": "Lista todos los webhooks configurados"
+					}
+				},
+				{
+					"name": "Replace Webhook Targets",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"targets\": [\n    {\n      \"url\": \"https://tu-webhook.com/endpoint\",\n      \"is_active\": true,\n      \"headers\": [\n        {\n          \"name\": \"Authorization\",\n          \"value\": \"Bearer token123\",\n          \"is_active\": true\n        }\n      ]\n    }\n  ],\n  \"webhook\": {\n    \"signatureHeader\": \"X-WApp-Signature-256\",\n    \"signEnabled\": true\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/webhooks",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "webhooks"]
+						},
+						"description": "Reemplaza todos los webhooks configurados"
+					}
+				},
+				{
+					"name": "Update Webhook Secret",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"secret\": \"tu-secret-key-here\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/webhooks/secret",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "webhooks", "secret"]
+						},
+						"description": "Actualiza el secret para firmar los webhooks"
+					}
+				}
+			]
+		}
+	]
+}
+
