@@ -77,6 +77,7 @@ export class WApp {
     // Inbound messages -> deliver webhooks
     this.client.on('message', async (msg) => {
       try {
+        console.log("Nuevo mensaje recibido:", msg);
         // Filtrar mensajes: solo mensajes directos (no grupos, no self)
         
         // 1. Ignorar mensajes propios (self messages)
@@ -153,7 +154,7 @@ function toMetaLikePayload(msg, sessionId) {
           messaging_product: 'whatsapp',
           metadata: {
             display_phone_number: to || 'Jhon',
-            phone_number_id: '837725142756006'
+            phone_number_id: sessionId
           },
           messages: [{
             from,
