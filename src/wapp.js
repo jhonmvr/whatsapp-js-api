@@ -157,7 +157,7 @@ function toMetaLikePayload(msg, sessionId) {
             phone_number_id: sessionId
           },
           messages: [{
-            from,
+            from:'+' + from,
             id: msg.id.id,
             timestamp: String(Math.floor(Date.now()/1000)),
             type: isText ? 'text' : (msg.type || 'unknown'),
